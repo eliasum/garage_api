@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "garage-api"
+version = "0.1.0"
+description = "API for managing garage parts"
+authors = ["elijah"]
+readme = "README.md"
+packages = [{include = "app", from = "."}]
+
+[tool.poetry.dependencies]
+python = "^3.13"
+uvicorn = {path = "fastapi/uvicorn-0.35.0-py3-none-any.whl"}
+starlette = {path = "fastapi/starlette-0.48.0-py3-none-any.whl"}
+pydantic = {path = "fastapi/pydantic-2.11.9-py3-none-any.whl"}
+fastapi-offline = {path = "fastapi/fastapi_offline-1.7.4-py3-none-any.whl"}
+
+[tool.poetry.group.dev.dependencies]
+
+[build-system]
+requires = ["poetry-core>=2.0.0"]
+build-backend = "poetry.core.masonry.api"
