@@ -50,8 +50,6 @@ class Garage:
         self.parts.append(part)  # append - аналог Add() для List<T> в C#.
         # Увеличиваем счетчик ID для следующей запчасти.
         self.next_id += 1
-        # Возвращаем созданный объект вызывающему коду.
-        return part
 
     # Метод для получения списка всех запчастей.
     def list_parts(self):
