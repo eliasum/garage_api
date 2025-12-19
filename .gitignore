@@ -69,3 +69,6 @@ alembic/
 .coverage
 htmlcov/
 .pytest_cache/
+
+# Игнорировать папку fastapi и всё её содержимое
+fastapi/
