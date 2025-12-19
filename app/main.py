@@ -22,9 +22,10 @@ garage.add_part("Воздушный фильтр", "AF 123", 3)
 garage.add_part("Свеча зажигания", "SP 456", 10)
 
 
-# ПЕРВЫЙ ЭНДПОИНТ - просто проверка работы
+# КОРНЕВОЙ ЭНДПОИНТ: Приветствие и информация об API для разработчиков
 @app.get("/")
 def read_root() -> Dict[str, Any]:
+    """Основная страница API с информацией о доступных эндпоинтах"""
     return {
         "message": "Garage API работает!",
         "endpoints": {
@@ -35,9 +36,16 @@ def read_root() -> Dict[str, Any]:
     }
 
 
+# ЭНДПОИНТ ЗДОРОВЬЯ: Для автоматического мониторинга и проверки работоспособности
 @app.get("/health")
 def health_check() -> Dict[str, Any]:  # для формирования документации
-    return {"status": "OK", "total_parts": len(garage.list_parts())}
+    """Проверка состояния сервиса (используется системами мониторинга)"""
+    return {
+        "status": "OK",
+        "total_parts": len(garage.list_parts()),
+        "service": "garage-api",
+        "version": "0.1.0",
+    }
 
 
 @app.get("/parts")
