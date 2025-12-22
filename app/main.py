@@ -2,9 +2,9 @@
 
 from typing import Any, Dict
 
-from fastapi import FastAPI, HTTPException
-
 from app.models import Garage
+from app.schemas.part import PartCreate, PartResponse  # Импортируем из папки schemas
+from fastapi import APIRouter, FastAPI, HTTPException
 
 # FastAPI (реактивный, событийно-ориентированный)
 # Что это: Приложение, которое ждет запросов и реагирует на них.
@@ -75,6 +75,17 @@ def get_part(part_id: int):
             status_code=404, detail=f"Запчасть с ID {part_id} не найдена"
         )
     return part  # Автоматически конвертируется в JSON
+
+
+router = APIRouter(prefix="/parts", tags=["parts"])
+
+
+@router.post("/", response_model=PartResponse)
+async def create_part(part: PartCreate):
+    """Создать новую запчасть"""
+    # part уже провалидирован
+    # Ваша бизнес-логика здесь
+    return {"id": 1, **part.model_dump()}  # Пример ответа
 
 
 # ЗАПУСК (оставляем на случай прямого запуска файла)
