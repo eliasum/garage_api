@@ -20,7 +20,34 @@ import sys
 # Добавляем корневую папку в Python path для корректных импортов
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from app.main import main
+import uvicorn
 
 if __name__ == "__main__":
-    main()
+    # ПЕРЕДАЁМ КАК СТРОКУ для работы reload!
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
+
+# poetry run uvicorn app.main:app --reload
+# │        │   │      │   │     │  │
+# │        │   │      │   │     │  └─── 7. ФЛАГ --reload (перезагрузка при изменении файлов)
+# │        │   │      │   │     │
+# │        │   │      │   │     └─── 6. ОБЪЕКТ `app` внутри файла main.py
+# │        │   │      │   │
+# │        │   │      │   └─── 5. ФАЙЛ `main.py` в папке `app/`
+# │        │   │      │
+# │        │   │      └─── 4. ПАПКА `app/` в проекте
+# │        │   │
+# │        │   └─── 3. СЕРВЕР uvicorn (запускает FastAPI)
+# │        │
+# │        └─── 2. КОМАНДА `run` запускает в виртуальном окружении Poetry
+# │
+# └─── 1. POETRY - менеджер зависимостей
+
+# Полная расшифровка:
+
+#     poetry - это менеджер зависимостей (как NuGet в C#)
+#     run - запустить команду в виртуальном окружении
+#     uvicorn - веб-сервер для ASGI приложений (как IIS для .NET)
+#     app.main:app - импортная строка:
+#         app.main = модуль app/main.py
+#         :app = переменная app в этом модуле (объект FastAPI)
+#     --reload = автоматическая перезагрузка при изменении кода
