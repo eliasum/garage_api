@@ -12,6 +12,7 @@ uvicorn = {path = "fastapi/uvicorn-0.35.0-py3-none-any.whl"}
 starlette = {path = "fastapi/starlette-0.48.0-py3-none-any.whl"}
 pydantic = {path = "fastapi/pydantic-2.11.9-py3-none-any.whl"}
 fastapi-offline = {path = "fastapi/fastapi_offline-1.7.4-py3-none-any.whl"}
+sqlalchemy = "^2.0.46"
 
 [tool.poetry.group.dev.dependencies]
 
