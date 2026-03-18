@@ -4,11 +4,15 @@
 
 from typing import Any, Dict
 
+from sqlalchemy.orm import Session
+
 from app.database import garage  # Импортируем ОДИН экземпляр
+from app.db.database import get_db
+from app.db.models import PartDB
 from app.schemas.part import PartCreate, PartResponse  # Импортируем из папки schemas
 from fastapi import APIRouter, Depends, HTTPException
 
-# 4. СОЗДАНИЕ РОУТЕРА ДЛЯ ЗАПЧАСТЕЙ
+# СОЗДАНИЕ РОУТЕРА ДЛЯ ЗАПЧАСТЕЙ
 # APIRouter — группа эндпоинтов
 # prefix="/parts" — все эндпоинты будут начинаться с /parts
 # tags=["parts"] — группа в документации Swagger
@@ -21,7 +25,7 @@ def get_garage():
     return garage  # Просто возвращаем импортированный объект
 
 
-# 5. ЭНДПОИНТ СОЗДАНИЯ ЗАПЧАСТИ (POST)
+# ЭНДПОИНТ СОЗДАНИЯ ЗАПЧАСТИ (POST)
 # @router.post — декоратор, указывает метод POST и путь
 # "/" — путь относительно префикса (/parts + / = /parts/)
 # Т.е. полный путь будет: /parts/
@@ -54,7 +58,7 @@ async def create_part(
     # Тело ответа с данными созданного объекта
 
 
-# 9. ЭНДПОИНТ СПИСКА ЗАПЧАСТЕЙ (GET /parts)
+# ЭНДПОИНТ СПИСКА ЗАПЧАСТЕЙ (GET /parts)
 # Возвращает все запчасти в формате JSON
 @router.get("/")
 def list_parts(
@@ -77,7 +81,7 @@ def list_parts(
     return {"total": len(parts_list), "parts": parts_list}
 
 
-# 10. ЭНДПОИНТ ПОЛУЧЕНИЯ КОНКРЕТНОЙ ЗАПЧАСТИ (GET /parts/{part_id})
+# ЭНДПОИНТ ПОЛУЧЕНИЯ КОНКРЕТНОЙ ЗАПЧАСТИ (GET /parts/{part_id})
 # {part_id} — path parameter (параметр пути)
 @router.get("/{part_id}")
 def get_part(part_id: int, garage_instance=Depends(get_garage)):
@@ -88,6 +92,18 @@ def get_part(part_id: int, garage_instance=Depends(get_garage)):
             status_code=404, detail=f"Запчасть с ID {part_id} не найдена"
         )
     return part  # FastAPI автоматически конвертирует в JSON
+
+
+# ЭНДПОИНТ ОБНОВЛЕНИЯ КОНКРЕТНОЙ ЗАПЧАСТИ (PUT /parts/{part_id})
+# {part_id} — path parameter (параметр пути)
+@router.put("/{part_id}")
+async def update_part(
+    part_id: int, part_data: PartCreate, db: Session = Depends(get_db)
+):
+    """Обновить запчасть по ID"""
+    db_part = db.query(PartDB).filter(PartDB.id == part_id).first()
+    if not db_part:
+        raise HTTPException(status_code=404, detail="Part not found")
 
 
 # # РАЗБОР КОДА СОЗДАНИЯ ЗАПЧАСТИ

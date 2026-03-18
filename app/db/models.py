@@ -19,7 +19,7 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 
-class Part(Base):
+class PartDB(Base):
     """
     Модель 'Запчасть'. Соответствует таблице 'parts' в базе данных.
     Каждая запись в этой таблице = одна запчасть в гараже.
