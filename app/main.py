@@ -1,39 +1,26 @@
-# 2025.11.27 18:43 IMM
+# 2026.03.19 19:05 IMM (ОБНОВЛЕНО: работа с БД)
 
 # ГЛАВНЫЙ ВХОД, ОБЩИЕ ЭНДПОИНТЫ
 
-# Импорты
 from typing import Any, Dict
 
-from app.api.parts import router as parts_router  # Импортируем "магазин запчастей"
-from app.database import garage  # Импортируем из database.py
-from fastapi import FastAPI
+from sqlalchemy.orm import Session
+
+from app.api.parts import router as parts_router
+from app.db.database import get_db  # функция для получения сессии
+from app.db.models import PartDB  # модель таблицы parts
+from fastapi import Depends, FastAPI
 
 # 1. СОЗДАНИЕ ПРИЛОЖЕНИЯ FASTAPI
-# FastAPI() — конструктор, создаёт веб-приложение
-# title, description — метаданные для документации
-
-# FastAPI (реактивный, событийно-ориентированный)
-# Что это: Приложение, которое ждет запросов и реагирует на них.
-# Аналог из жизни: Работа курьерского сервиса. Ты ждешь заказов, и когда приходит заказ, выполняешь его.
-
-# СОЗДАЕМ FASTAPI ПРИЛОЖЕНИЕ
 app = FastAPI(title="Garage API", description="API для учета запчастей в гараже")
 
-
-# ✅ ИНИЦИАЛИЗИРУЕМ ТЕСТОВЫЕ ДАННЫЕ
-# init_test_data()  # пока отключаем, работаем с БД
-
-
-# 6. ПОДКЛЮЧЕНИЕ РОУТЕРА К ПРИЛОЖЕНИЮ
-# Без этой строки роутер не будет работать!
+# 2. ПОДКЛЮЧЕНИЕ РОУТЕРА С ЭНДПОИНТАМИ ДЛЯ ЗАПЧАСТЕЙ
 app.include_router(parts_router)
 
 
-# 7. КОРНЕВОЙ ЭНДПОИНТ (GET /)
-# Возвращает информацию об API
+# 3. КОРНЕВОЙ ЭНДПОИНТ (GET /)
 @app.get("/")
-def read_root() -> Dict[str, Any]:  # для формирования документации
+def read_root() -> Dict[str, Any]:
     """Основная страница API с информацией о доступных эндпоинтах"""
     return {
         "message": "Garage API работает!",
@@ -45,38 +32,22 @@ def read_root() -> Dict[str, Any]:  # для формирования докум
     }
 
 
-# 8. ЭНДПОИНТ ПРОВЕРКИ ЗДОРОВЬЯ (GET /health)
-# Используется для мониторинга
+# 4. ЭНДПОИНТ ПРОВЕРКИ ЗДОРОВЬЯ (GET /health)
+# Теперь получаем количество запчастей напрямую из базы данных
 @app.get("/health")
-def health_check() -> Dict[str, Any]:  # для формирования документации
+def health_check(db: Session = Depends(get_db)) -> Dict[str, Any]:
     """Проверка состояния сервиса (используется системами мониторинга)"""
+    total_parts = db.query(PartDB).count()  # считаем записи в таблице parts
     return {
         "status": "OK",
-        "total_parts": len(garage.list_parts()),  # Считаем запчасти
+        "total_parts": total_parts,
         "service": "garage-api",
         "version": "0.1.0",
     }
 
 
-# 11. ЗАПУСК СЕРВЕРА (если файл запущен напрямую)
-# Как работает: Запускается веб-сервер (uvicorn), который начинает "слушать" порт 8000
-# Время жизни: Сервер работает бесконечно (пока его не остановят), ожидая HTTP-запросы
-# Пример из жизни: Открыл магазин и ждешь клиентов 24/7
-
+# 5. ЗАПУСК СЕРВЕРА (при прямом запуске файла)
 if __name__ == "__main__":
     import uvicorn
 
     uvicorn.run(app, host="0.0.0.0", port=8000)
-
-# __name__ - это специальная переменная Python
-# Когда файл запускают напрямую (python app/main.py), то __name__ == "__main__"
-# Когда файл импортируют из другого модуля, то __name__ == "app.main"
-# То есть код внутри if __name__ == "__main__": выполняется только при прямом запуске файла.
-
-# FastAPI = "Конструктор веб-API". Он берёт на себя:
-#     HTTP протокол
-#     JSON парсинг
-#     Документацию (Swagger)
-#     Валидацию данных
-#     Обработку ошибок
-#     Многопоточность
