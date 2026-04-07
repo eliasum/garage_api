@@ -11,7 +11,12 @@
 - Base = базовый класс, от которого наследуются все модели
 """
 
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import (
+    Column,
+    Float,  # если ещё не импортирован
+    Integer,
+    String,
+)
 from sqlalchemy.orm import declarative_base
 
 # Базовый класс для всех моделей. Все таблицы регистрируются через него.
@@ -46,3 +51,4 @@ class PartDB(Base):
     # SQLAlchemy автоматически создаст конструктор __init__,
     # поэтому писать его вручную не нужно.
     # Также автоматически доступен метод __repr__ для отладки.
+    price = Column(Float, nullable=True)  # цена, может быть пустой
