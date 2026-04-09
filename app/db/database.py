@@ -15,8 +15,12 @@
 import os
 from typing import Iterator
 
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
+
+# Загружаем переменные из .env (если файл существует)
+load_dotenv()
 
 # ----------------------------------------------------------------------
 # 1. URL ПОДКЛЮЧЕНИЯ (из переменной окружения или SQLite по умолчанию)
